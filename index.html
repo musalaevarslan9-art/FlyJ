@@ -1,0 +1,212 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>Lucky Jet — Crash (Demo)</title>
+  <meta name="description" content="Static crash-game demo (no backend). Works on GitHub Pages." />
+  <link rel="preload" href="./assets/bg.mp3" as="audio" />
+  <link rel="preload" href="./assets/fly.mp3" as="audio" />
+  <link rel="preload" href="./assets/beep.mp3" as="audio" />
+  <link rel="icon" type="image/svg+xml" href="./assets/btc.svg" />
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div id="app">
+    <header class="topbar">
+      <div class="brand">
+        <button class="icon-btn" id="btnMenu" aria-label="Меню">
+          <img src="./assets/menu.svg" alt="" />
+        </button>
+        <img class="logo" src="./assets/logo.svg" alt="Lucky Jet" />
+        <div class="chips" id="historyChips" aria-label="История коэффициентов"></div>
+      </div>
+
+      <div class="topbar-right">
+        <div class="balance">
+          <span class="balance-label">Баланс</span>
+          <span class="balance-value" id="balanceValue">$0.00</span>
+          <button class="pill" id="btnResetBalance" title="Сбросить демо-баланс">Reset 10k</button>
+        </div>
+
+        <button class="icon-btn" id="btnSound" aria-label="Звук">
+          <img src="./assets/sound.svg" alt="" />
+          <span class="dot" id="soundDot" aria-hidden="true"></span>
+        </button>
+        <button class="icon-btn" id="btnWallet" aria-label="Кошелёк">
+          <img src="./assets/wallet.svg" alt="" />
+        </button>
+        <button class="icon-btn" id="btnGift" aria-label="Подарки">
+          <img src="./assets/gift.svg" alt="" />
+        </button>
+        <button class="icon-btn" id="btnLimits" aria-label="Лимиты">
+          <img src="./assets/limits.svg" alt="" />
+        </button>
+        <button class="icon-btn" id="btnSupport" aria-label="Поддержка">
+          <img src="./assets/support.svg" alt="" />
+        </button>
+        <button class="icon-btn" id="btnHowTo" aria-label="Как играть">
+          <img src="./assets/question.svg" alt="" />
+        </button>
+        <button class="icon-btn" id="btnLogout" aria-label="Выйти">
+          <img src="./assets/logout.svg" alt="" />
+        </button>
+      </div>
+    </header>
+
+    <main class="layout">
+      <section class="game">
+        <div class="game-head">
+          <div class="round-pill" id="roundPill">Подготовка…</div>
+          <div class="demo-badge">DEMO • без денег • без сервера</div>
+        </div>
+
+        <div class="scene" id="scene">
+          <img class="sun" src="./assets/sun.png" alt="" />
+          <img class="clouds" src="./assets/clouds.svg" alt="" />
+          <img class="graph-left" src="./assets/graph-left.svg" alt="" />
+          <img class="graph-bottom" src="./assets/graph-bottom.svg" alt="" />
+
+          <canvas id="graph" width="1280" height="720" aria-label="График полёта"></canvas>
+
+          <div class="multiplier" id="multiplier">
+            <div class="mult-value" id="multValue">1.00x</div>
+            <div class="mult-sub" id="multSub">Ожидание следующего раунда…</div>
+          </div>
+
+          <div class="joe" id="joe" aria-hidden="true">
+            <div class="fire-wrap">
+              <img src="./assets/fire.svg" alt="" />
+            </div>
+            <img class="joe-img" src="./assets/guy.png" alt="" />
+          </div>
+
+          <div class="crash-overlay" id="crashOverlay" aria-hidden="true">
+            <div class="crash-title">CRASHED</div>
+            <div class="crash-value" id="crashValue">x0.00</div>
+          </div>
+        </div>
+
+        <div class="bets">
+          <div class="bet-card" data-slot="A">
+            <div class="bet-top">
+              <div class="bet-title">Ставка A</div>
+              <div class="bet-status" id="statusA">—</div>
+            </div>
+
+            <div class="bet-row">
+              <label class="field">
+                <span>Сумма</span>
+                <div class="input">
+                  <button class="mini" data-act="minus">−</button>
+                  <input id="amountA" inputmode="decimal" value="100" />
+                  <button class="mini" data-act="plus">+</button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Авто-кэшаут (x)</span>
+                <div class="input">
+                  <input id="autoA" inputmode="decimal" placeholder="например 2.00" />
+                </div>
+              </label>
+            </div>
+
+            <div class="bet-actions">
+              <button class="btn primary" id="btnBetA">Сделать ставку</button>
+              <button class="btn ghost" id="btnHalfA">1/2</button>
+              <button class="btn ghost" id="btnDoubleA">x2</button>
+            </div>
+
+            <div class="bet-foot">
+              <div class="hint" id="hintA">Можно поставить в ожидании. Кэшаут — во время полёта.</div>
+            </div>
+          </div>
+
+          <div class="bet-card" data-slot="B">
+            <div class="bet-top">
+              <div class="bet-title">Ставка B</div>
+              <div class="bet-status" id="statusB">—</div>
+            </div>
+
+            <div class="bet-row">
+              <label class="field">
+                <span>Сумма</span>
+                <div class="input">
+                  <button class="mini" data-act="minus">−</button>
+                  <input id="amountB" inputmode="decimal" value="100" />
+                  <button class="mini" data-act="plus">+</button>
+                </div>
+              </label>
+
+              <label class="field">
+                <span>Авто-кэшаут (x)</span>
+                <div class="input">
+                  <input id="autoB" inputmode="decimal" placeholder="например 3.00" />
+                </div>
+              </label>
+            </div>
+
+            <div class="bet-actions">
+              <button class="btn primary" id="btnBetB">Сделать ставку</button>
+              <button class="btn ghost" id="btnHalfB">1/2</button>
+              <button class="btn ghost" id="btnDoubleB">x2</button>
+            </div>
+
+            <div class="bet-foot">
+              <div class="hint" id="hintB">Можно вести две независимые ставки.</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <aside class="side">
+        <div class="side-card">
+          <div class="tabs">
+            <button class="tab active" data-tab="all">All</button>
+            <button class="tab" data-tab="my">My</button>
+            <button class="tab" data-tab="top">Top</button>
+          </div>
+
+          <div class="list-head">
+            <span>Игрок</span>
+            <span>Коэф</span>
+            <span>Выигрыш</span>
+          </div>
+
+          <div class="list" id="betsList" aria-label="Список ставок"></div>
+        </div>
+
+        <div class="side-card mini-card">
+          <div class="mini-title"><img src="./assets/trust.svg" alt="" /> Fair demo</div>
+          <div class="mini-text">
+            Это <b>клиентский демо‑режим</b>. Никаких депозитов/выводов, никакого сервера.
+            История и баланс сохраняются в <code>localStorage</code>.
+          </div>
+        </div>
+      </aside>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+    <div class="modal" id="modal">
+      <div class="modal-backdrop" data-close="1"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-top">
+          <div class="modal-title" id="modalTitle">Заголовок</div>
+          <button class="icon-btn" data-close="1" aria-label="Закрыть">
+            <img src="./assets/close.svg" alt="" />
+          </button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+      </div>
+    </div>
+
+    <audio id="audBg" src="./assets/bg.mp3" loop preload="auto"></audio>
+    <audio id="audFly" src="./assets/fly.mp3" loop preload="auto"></audio>
+    <audio id="audBeep" src="./assets/beep.mp3" preload="auto"></audio>
+  </div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
